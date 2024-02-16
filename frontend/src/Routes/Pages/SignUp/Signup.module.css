@@ -1,0 +1,19 @@
+.signupContainer{
+    /* border: 2px solid red; */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+
+.signupContainer > div div{
+    margin-bottom: 10px;
+}
+
+.onboarding{
+    display: flex;
+    flex-direction: row-reverse;
+}
