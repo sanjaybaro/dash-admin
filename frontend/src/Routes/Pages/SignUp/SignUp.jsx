@@ -13,6 +13,8 @@ export const SignUp = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [signUpLoader, setSignUpLoader] = useState(false)
+    const [userName, setUserName] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState(null)
     
 
      
@@ -20,9 +22,16 @@ export const SignUp = () => {
 
     // Function when user Click on submit button during SignUp
     const userSignClick = (e) => {
+        const data = {
+            email,
+            password,
+            phoneNumber,
+            userName
+        }
         e.preventDefault();
         setSignUpLoader(true)
-        axios.post(`${appUrl}${userSignUp}`)
+        console.log(data);
+        axios.post(`${appUrl}${userSignUp}`, data)
         .then((res)=>{
             console.log(res);
             alert(`${res.data.message}`)
@@ -41,7 +50,9 @@ export const SignUp = () => {
 
                
                
-
+               <div>
+                <Link to={'/userProfile'}>Profile</Link>
+               </div>
 
                 <h1>Sign Up</h1>
 
@@ -63,6 +74,40 @@ export const SignUp = () => {
 
                         />
                     </div>
+
+                    <div>
+                        <label>UserName</label>
+                    </div>
+
+                    {/* Email Input */}
+                    <div>
+                        <input type='text'
+                            placeholder='UserName'
+                            required
+                            value={userName}
+                            onChange={(e)=>{setUserName(e.target.value)}}
+                            
+
+                        />
+                    </div>
+
+                    <div>
+                        <label>Phone</label>
+                    </div>
+
+                    {/* Email Input */}
+                    <div>
+                        <input type='number'
+                            placeholder='Phone Number'
+                            required
+                            value={phoneNumber}
+                            onChange={(e)=>{setPhoneNumber(e.target.value)}}
+                            
+
+                        />
+                    </div>
+
+
 
 
                     <div>
