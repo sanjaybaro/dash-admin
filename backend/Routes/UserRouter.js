@@ -192,6 +192,16 @@ userRouter.get('/', async(req, res)=>{
     }
 })
 
+userRouter.get('/', async(req, res)=>{
+    try {
+        const allUser = await UserModel.find();
+        console.log(allUser);
+        res.status(200).send({"allUser": allUser})
+    } catch (error) {
+        
+    }
+})
+
 
 module.exports = {
     userRouter
