@@ -202,6 +202,21 @@ userRouter.get('/', async(req, res)=>{
     }
 })
 
+userRouter.delete('/delete/:_id', async(req, res)=>{
+    try {
+        const {_id} = req.params;
+        console.log(_id);
+        if(_id){
+            await UserModel.findByIdAndDelete({_id})
+            res.status(200).send({"message": "Deleted"})
+        }
+        console.log(allUser);
+        res.status(200).send({"allUser": allUser})
+    } catch (error) {
+        
+    }
+})
+
 
 module.exports = {
     userRouter

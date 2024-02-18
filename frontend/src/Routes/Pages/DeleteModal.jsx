@@ -28,6 +28,7 @@ export const DeleteModal = ({ _id }) => {
 
     const deleteUserHandler = () => {
         setDeleteLoading(true)
+        console.log("****");
         axios.delete(`${appUrl}${deleteUser}/${_id}`)
             .then((res) => {
                 console.log(res);
