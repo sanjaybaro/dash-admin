@@ -10,7 +10,7 @@ const userRouter = express.Router();
 
 
 const storage = multer.diskStorage({
-    destination: './userProfile',
+    destination: './uploads',
     filename: (req, file, callback) => {
         callback(null, file.originalname)
     },
@@ -106,74 +106,83 @@ userRouter.get('/singleUser/:id', async (req, res) => {
 
 // userProfileUpdate
 
-userRouter.patch('/userProfileUpdate', upload.single('userImage'), auth, async (req, res) => {
+userRouter.patch('/uploads', upload.single('userImage'), auth, async (req, res) => {
 
     const file = req.file;
 
 
     try {
-        const { email, password, firstName, lastName, state, city } = req.body
+        const { email,  userName, userId} = req.body
 
-        console.log(email, password, firstName, lastName, state, city, user);
+        console.log(email, userName);
 
         const updateFields = {
-            ...(firstName !== undefined && { firstName }),
-            ...(lastName !== undefined && { lastName }),
-            ...(state !== undefined && { state }),
-            ...(city !== undefined && { city }),
+            ...(userName !== undefined && { userName }),
+            ...(email !== undefined && { email }),
+            // ...(phoneNumber !== undefined && { phoneNumber }),
             
             
         };
+
+       
         
         if(file){
-
         
-        const destination = path.join(__dirname, '..', 'userProfile', file.originalname);
-        fs.renameSync(file.path, destination);
-
-        const fileName = file.filename;
-        const title = fileName.substring(0, fileName.lastIndexOf('.')); // Assuming the title is the part before the file extension
-        const fileUrl = `${req.protocol}s://${req.get('host')}/userProfile/${file.filename}`;
-
-        // Append the image URL to req.body.image
-        req.body.image = fileUrl;
-
-        // console.log(">>>>");
-        // console.log(fileUrl);
-
-        updateFields.image = fileUrl;
-
-
+            const file = req.file;
+        
+            // const destination = path.join(__dirname, '..', 'uploads', file.originalname);
+            // fs.renameSync(file.path, destination);
+    
+            const fileName = file.filename;
+            console.log(fileName);
+            const title = fileName.substring(0, fileName.lastIndexOf('.')); // Assuming the title is the part before the file extension
+            // const fileUrl = `${req.protocol}://${req.get('host')}/Arts/${file.filename}`;
+    
+            // console.log(fileUrl);
+    
+            // console.log(req.protocol);
+            // console.log(req.get('host'));
+    
+            // req.body.image = fileUrl;
+            req.body.profileImage = fileName;
+            updateFields.profileImage = fileName;
         }
+
+        console.log(updateFields);
 
         // console.log(...req.body);
         
         
 
-        if (password) {
-            bcrypt.hash(password, 5, async (err, hash) => {
-                // Store hash in your password DB.
-                if (err) {
-                    res.status(200).send({ "msg": "Enter password again" })
+        // if (password) {
+        //     bcrypt.hash(password, 5, async (err, hash) => {
+        //         // Store hash in your password DB.
+        //         if (err) {
+        //             res.status(200).send({ "msg": "Enter password again" })
 
-                }
+        //         }
                 
-                updateFields.password = hash;
+        //         updateFields.password = hash;
              
-                console.log(updateFields);
-                const ExistingUser = await UserModel.findByIdAndUpdate({ _id: user }, { ...updateFields })
-                res.status(200).send({ "msg": "Profile Updated" })
+        //         console.log(updateFields);
+        //         const ExistingUser = await UserModel.findByIdAndUpdate({ _id: user }, { ...updateFields })
+        //         res.status(200).send({ "msg": "Profile Updated" })
 
-            });
-        }
-        else {
+        //     });
+        // }
+        // else {
 
             
             
-            const ExistingUser = await UserModel.findByIdAndUpdate({ _id: user }, { ...updateFields})
-            res.status(200).send({ "msg": "Profile Updated" })
-        }
-
+        //     const ExistingUser = await UserModel.findByIdAndUpdate({ _id: user }, { ...updateFields})
+        //     res.status(200).send({ "msg": "Profile Updated" })
+        // }
+        
+        console.log("++");
+        const ExistingUser = await UserModel.findByIdAndUpdate({ _id: userId },  {...updateFields} );
+        console.log("++");
+        res.status(200).send({ "msg": "Patching in progress" })
+    
     } catch (error) {
         res.status(400).send({ "msg": "Login Failed", "err": error })
 

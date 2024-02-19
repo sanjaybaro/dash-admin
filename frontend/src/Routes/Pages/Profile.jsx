@@ -30,7 +30,7 @@ export const Profile = () => {
 
                         <Wrap>
                             <WrapItem>
-                                <Avatar size='xl' name={el.userName} src='' />
+                                <Avatar size='xl' name={el.userName} src={`${appUrl}/uploads/${el.profileImage}`} />
                             </WrapItem>
                         </Wrap>
                         <p>User Name : {el.userName} </p>

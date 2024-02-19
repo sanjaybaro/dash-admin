@@ -4,25 +4,29 @@ import {
     FormErrorMessage, FormHelperText, Select, useToast, Input, InputGroup, InputRightElement, IconButton
 } from '@chakra-ui/react'
 import { EditIcon, CheckIcon, SmallCloseIcon } from '@chakra-ui/icons'
-
+import axios from 'axios'
 
 
 import { Tooltip, } from '@chakra-ui/react'
+import { appUrl } from '../../Constants/Constant'
 
 
 
-export const EditModal = ({ email, password, profileImage, userName, phoneNumber}) => {
+export const EditModal = ({ email, password, profileImage, userName, phoneNumber }) => {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [imageUrl, setImageUrl] = useState('')
 
-    
     // STATES TO TOGGLE BETWEEN ICONS WHEN USER CLICKS ON EDIT ICON 
+    const [editUserName, setEditUserName] = useState('')
+    const [userPhoneNumber, setPhoneNumber] = useState('')
+    const [userEmail, setUserEmail] = useState('')
 
     const [editUserFirstName, setEditUserFirstName] = useState(false);
     const [editUserLastName, setEditUserLastName] = useState(false)
     const [editUserEmail, setEditUserEmail] = useState(false)
     const [editUserDepartment, setEditUserDepartment] = useState(false)
-    
+
 
     // STATES TO SAVE DATA WHEN USER EDITS EXISTING DATA
 
@@ -31,15 +35,17 @@ export const EditModal = ({ email, password, profileImage, userName, phoneNumber
     const [saveEmail, setSaveEmail] = useState(false)
     const [saveDepartment, setSaveDepartment] = useState(false)
 
-    
+
     const toast = useToast()
 
+    const fileInput = React.createRef();
 
 
-    
-     // USESELECTOR TO DESTRUCTURE PROPERTIES FROM REDUX STORE FROM EditUserReducer
 
-  
+
+    // USESELECTOR TO DESTRUCTURE PROPERTIES FROM REDUX STORE FROM EditUserReducer
+
+
     //FUNCTION TO HANDLE WHEN USER IS DONE WITH EDITING AND SUBMIT THE FORM 
 
     const editHandler = () => {
@@ -51,15 +57,77 @@ export const EditModal = ({ email, password, profileImage, userName, phoneNumber
         // }
 
         // console.log("updateInfo", updateInfo)
+        let data = {}
         
+        const formData = new FormData();
+
+        if (fileInput.current.files.length > 0) {
+
+            formData.append("userImage", fileInput.current.files[0]);
+            console.log(fileInput.current.files[0], "))))))");
+            console.log(formData);
+            data.image = formData
+        }
+
+        console.log(formData)
+        console.log(userEmail, editUserName);
+
+        if (userEmail) {
+            // formData.firstName = firstName
+            formData.append("email", userEmail);
+
+        }
+
+        if (editUserName) {
+            // formData.firstName = firstName
+            formData.append("userName", editUserName);
+
+        }
+
+        
+
+        // if (state) {
+        //     // data.state = state
+        //     formData.append("state", state);
+        // }
+
+        // if (city) {
+        //     // data.city = city
+        //     formData.append("city", city);
+        // }
+
+        // if (password) {
+        //     // data.password = password
+        //     formData.append("password", password);
+        // }
+
+        const token = localStorage.getItem('Token')
+        console.log(token);
+        // const headers = {
+        //     Authorization: `${token}`,
+        // };
+
+        axios.patch(`${appUrl}/user/uploads`, formData, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+            alert("Updated Successfully")
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+
 
     }
 
     // console.log("isED", editIsLoading);
-    
+
     // FUNCTION TO HANDLE WHEN USER CLCKS ON EDIT MODAL CLOSE ICON TO RESET THE STATES
 
-    const closeEditModal = ()=>{
+    const closeEditModal = () => {
         setEditUserFirstName(false)
         setEditUserLastName(false)
         setEditUserEmail(false)
@@ -73,19 +141,35 @@ export const EditModal = ({ email, password, profileImage, userName, phoneNumber
     }
 
 
+    const onChange = (e) => {
+        const file = e.target.files[0];
+        // console.log("Files", file);
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            // Set imageUrl in your component's state or wherever it's needed
+            // console.log("imageUrl");
+            // console.log(imageUrl);
+            setImageUrl(imageUrl);
+        }
+
+
+    };
+
+
+
     return (
         <div>
             <Button onClick={onOpen}
                 variant={'none'}
 
-               
+
             >Edit</Button>
 
             <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay onClick={closeEditModal}/>
+                <ModalOverlay onClick={closeEditModal} />
                 <ModalContent>
                     <ModalHeader>Edit Details</ModalHeader>
-                    <ModalCloseButton  />
+                    <ModalCloseButton />
                     <ModalBody>
 
 
@@ -95,7 +179,16 @@ export const EditModal = ({ email, password, profileImage, userName, phoneNumber
 
                                 <FormControl mt={1}>
                                     <FormLabel>Image</FormLabel>
-                                    <Input type='file'    />
+                                    <Input type='file'
+                                        name="userImage"
+                                        ref={fileInput}
+                                        onChange={onChange}
+                                        borderRadius={'20px'}
+                                        variant={'none'}
+
+                                        // width={'20%'}
+                                        enctype="multipart/form-data"
+                                    />
                                 </FormControl>
 
 
@@ -106,10 +199,11 @@ export const EditModal = ({ email, password, profileImage, userName, phoneNumber
                                             <Input
                                                 type="text"
                                                 placeholder="User Name"
-                                                // value={editFirstName}
+                                                // value={editUserFirstName}
                                                 // value={userName}
+                                                value={editUserName}
                                                 disabled={saveFirstname}
-                                                // onChange={(e) => { dispatch(editUserFirstNameAction(e.target.value)) }}
+                                            onChange={(e) => { setEditUserName(e.target.value) }}
                                             />
                                         ) : (
                                             <Input type="text" placeholder="First Name" value={userName} isDisabled />
@@ -236,9 +330,9 @@ export const EditModal = ({ email, password, profileImage, userName, phoneNumber
                                             <Input
                                                 type="text"
                                                 placeholder="Email"
-                                                // value={editEmail}
+                                                value={userEmail}
                                                 disabled={saveEmail}
-                                                // onChange={(e) => { dispatch(editUserEmailAddressAction(e.target.value)) }}
+                                            onChange={(e) => { setUserEmail(e.target.value) }}
                                             />
                                         ) : (
                                             <Input type="text" placeholder="Email" value={email} isDisabled />
@@ -308,7 +402,7 @@ export const EditModal = ({ email, password, profileImage, userName, phoneNumber
                                     w={'full'}
                                     mt={6}
                                     onClick={editHandler}
-                                    // colorScheme={editIsLoading ? 'blue' : 'blue'}
+                                // colorScheme={editIsLoading ? 'blue' : 'blue'}
 
                                 >
                                     Save Details

@@ -7,16 +7,17 @@ import { appUrl } from '../Constants/Constant'
 export const appContent = createContext()
 export const ContextApi = ({children}) => {
     
-    const [isAuth, setIsAuth] = useState(false)
     const token = localStorage.getItem('Token')
+    const [isAuth, setIsAuth] = useState(false)
     const userId = localStorage.getItem('UserId')
     const [userData, setUserData] = useState({})
     const [loginOpen, setLoginOpen] = useState(false)
     const [userProfileLoading, setUserProfileLoading] = useState(false)
-
-
     
 
+    console.log("Token", token)
+    
+    
     useEffect(()=>{
       
         if(token){
@@ -32,7 +33,7 @@ export const ContextApi = ({children}) => {
             //     console.log(err);
             // })
         }
-    }, [isAuth])
+    }, [])
 
     // console.log("contextApi login open", loginOpen);
 
